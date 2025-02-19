@@ -1,2 +1,1 @@
-# screen_size_tester
-This is a simple widget that allows the user test a flutter layout builder with different screen sizes.
+A simple widget that allows the user the test Flutter layouts on many different screen sizes.

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+
 import '../constants/constants.dart';
 
 class ScreenSizeTester extends StatefulWidget {
-  final Widget testScreens;
-  final DeviceTypes deviceTypes;
+  final Widget testScreen;
+  final TestDeviceTypes deviceTypes;
 
   const ScreenSizeTester({
     super.key,
-    required this.testScreens,
+    required this.testScreen,
     required this.deviceTypes,
   });
+
+  static void nextScreenSize(BuildContext context) {
+    context.findAncestorStateOfType<_ScreenSizeTesterState>()?.nextScreenSize();
+  }
 
   @override
   State<ScreenSizeTester> createState() => _ScreenSizeTesterState();
@@ -17,47 +22,67 @@ class ScreenSizeTester extends StatefulWidget {
 
 class _ScreenSizeTesterState extends State<ScreenSizeTester> {
   int _currentIndex = 0;
-  List<Size> _deviceSizes = StandardScreenSize.applePhones();
+  late List<Size> _deviceSizes;
+  Key key = UniqueKey();
+  late double _screenHeight;
+  late double _screenWidth;
 
   @override
   void initState() {
     super.initState();
     _deviceSizes = _getSizeForDevice();
+    _screenWidth = _deviceSizes[0].width;
+    _screenHeight = _deviceSizes[0].height;
   }
 
   List<Size> _getSizeForDevice() {
     switch (widget.deviceTypes) {
-      case DeviceTypes.desktopSizes:
+      case TestDeviceTypes.desktopSizes:
         return StandardScreenSize.desktopSizes();
-      case DeviceTypes.androidPhones:
+      case TestDeviceTypes.androidPhones:
         return StandardScreenSize.androidPhones();
-      case DeviceTypes.androidTablets:
+      case TestDeviceTypes.androidTablets:
         return StandardScreenSize.androidTables();
-      case DeviceTypes.iPhones:
+      case TestDeviceTypes.iPhones:
         return StandardScreenSize.applePhones();
-      case DeviceTypes.ipads:
+      case TestDeviceTypes.ipads:
         return StandardScreenSize.appleTables();
     }
   }
 
-  void _nextScreenSize() {
-    setState(() {
-      _currentIndex =
-          (_currentIndex + 1) % StandardScreenSize.applePhones().length;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: _nextScreenSize,
-        child: Icon(Icons.refresh),
-      ),
-      body: MediaQuery(
-        data: MediaQueryData(size: _deviceSizes[_currentIndex]),
-        child: widget.testScreens,
+    return KeyedSubtree(
+      key: key,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(border: Border.all(width: 5)),
+            height: _screenHeight,
+            width: _screenWidth,
+            child: widget.testScreen,
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FloatingActionButton(
+              child: Icon(Icons.refresh),
+              onPressed: () {
+                nextScreenSize();
+              },
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  void nextScreenSize() {
+    setState(() {
+      key = UniqueKey();
+      _currentIndex = (_currentIndex + 1) % _deviceSizes.length;
+      _screenHeight = _deviceSizes[_currentIndex].height;
+      _screenWidth = _deviceSizes[_currentIndex].width;
+    });
   }
 }

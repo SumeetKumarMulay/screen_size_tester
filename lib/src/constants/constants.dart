@@ -53,7 +53,7 @@ class StandardScreenSize {
   }
 }
 
-enum DeviceTypes { desktopSizes, ipads, iPhones, androidPhones, androidTablets }
+enum TestDeviceTypes { desktopSizes, ipads, iPhones, androidPhones, androidTablets }
 
 // enum LaptopSizes { smallLaptop, standardLaptop, thirteenInchMac, FHD, QHD, UHD }
 
